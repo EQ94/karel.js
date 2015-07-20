@@ -1,0 +1,99 @@
+<% include @begin %>
+	<div class="menu">
+		<% include @logo %>
+		<span class='spliter'></span>
+		<button id="pauseBtn" onclick="pause(this);">暂停</button>
+		<small>速度：</small>
+		<select onchange='speed(this);'>
+			<option value ="1000">非常慢</option>
+  			<option value ="500">慢</option>
+  			<option value ="200">较慢</option>
+  			<option selected value="100">正常</option>
+  			<option value="50">快</option>
+  			<option value="0">最快</option>
+		</select>
+		<span class="spliter"></span>
+		<button onclick="init();">初始化场景</button>
+		<button onclick="exec();">运行代码</button>
+		<button onclick="perform();">执行任务</button>
+
+		<% include @user %>
+	</div>
+
+	<div class="scence">
+		<iframe id="karelbox" src="/karel.html"></iframe>
+	</div>
+	<div class="program">
+		<h5>任务：<%- question.caption %> <sup>(作者：<%= question.name %>)</sup></h5>
+		<p>
+			<% var lines = question.description.split('\r\n');
+				for (var i = 0; i < lines.length; i++) { %>
+				<%= lines[i] %> <br>
+			<% } %>
+		</p>
+
+		<form method="post" action="/do/perform.html" enctype="multipart/form-data">
+		<% if (locals.answer) { %> 
+			<input type="hidden" value=<%= answer.aid %> name="aid">
+			<h5>编辑任务执行代码：<sup>(作者：<%= answer.name %>)</sup><button style="float:right; margin-right:5px">完成提交</button></h5>
+			<textarea id="code" name="acode" spellcheck="false"><%= answer.acode %></textarea>
+		<% } else { %>
+			<input type="hidden" value=<%= question.qid %> name="qid"> 
+			<h5>新建任务执行代码：<button style="float:right; margin-right:5px">完成提交</button></h5>
+			<textarea id="code" name="acode" spellcheck="false"></textarea>
+		<% } %>
+		</form>
+	</div>
+
+	<script>
+		var Karel = karelbox.contentWindow;
+		var qcode = here(function () {/* 
+			<%- question.qcode %>
+		*/});
+		function init() {
+			var delay = Karel.world.options.delay;
+			eval(qcode);
+			Karel.world.options.delay = delay;
+			Karel.world.stop();
+			Karel.world.run();	
+
+			pauseBtn.innerText = '暂停';
+		}
+
+		function exec() {
+			eval(code.value);
+		}
+
+		function perform () {
+			init();
+			exec();
+		}
+
+		function pause(button) {
+			if (Karel.world.timer) {
+				Karel.world.stop();
+				button.innerText = '运行';
+			} else {
+				Karel.world.run();
+				button.innerText = '暂停';
+			}
+		}
+
+		function speed(select) {
+			var delay = select[select.selectedIndex].value;
+
+			Karel.world.options.delay = delay;
+
+			if (Karel.world.timer) {
+				Karel.world.stop();
+				Karel.world.run();			
+			}
+		}
+
+		karelbox.onload = function () {
+			init();
+		}
+		
+	</script>
+
+<% include @end %>
