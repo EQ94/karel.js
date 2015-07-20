@@ -1,0 +1,88 @@
+<% include @begin %>
+	<div class="menu">
+		<% include @logo %>
+		<span><%= title %></span>
+
+		<button onclick="window.location='/download/Release-Tech.Robots-20150206.rar';" title="下载.NET版本的Karel程序">Karel .NET</button>
+
+		<button onclick="<%= 'window.location=\'/download/karel_cspb.pdf\'' %>;">Karel C#编程入门</button>
+
+		<% include @user %>
+	</div>
+
+	<div class="main" style="overflow-x: none; overflow-y: auto">
+		<div style="width: 340px; height: 340px; margin-left: auto; margin-right: auto; margin-top: 32px;">
+			<iframe id='karelbox' src='karel.html' style="width: 340px; height: 340px; border-style: none;"></iframe>
+		</div>
+
+		<div class='task-list' style="margin-left: 32px; margin-right: 32px; margin-top: 32px;">
+			<table>
+			<thead>
+				<tr> 
+					<th style="width: 16px"> </th> <th style="text-align: left">卡雷尔任务</th> <th style="width: 120px">作者</th> <th style="width: 120px">日期</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% for (var i = 0; i < questions.length; i++) { %>
+					<tr>
+						<td><strong>Q<%= page * pages + i + 1 %>.<strong></td> 
+						<td><%= questions[i].caption %></td> 
+						<td style="text-align:center"><%= questions[i].name %></td> 
+						<td style="text-align:center"><%= questions[i].qcts.toLocaleDateString() %></td>
+					</tr>
+					<tr>
+						<td colSpan="4" style="padding-left:5px">
+							<% var lines = questions[i].description.split('\r\n');
+								for (var l = 0; l < lines.length; l++) { %>
+								<%= lines[l] %> <br>
+							<% } %>
+						</td>
+					</tr>
+					<tr>
+						<td colSpan="4" style="text-align:right; font-size:10pt; border-bottom-style:dotted; border-bottom-width:1px;"> <a href="<%= '/perform.html?qid=' + questions[i].qid %>">做任务</a> <span class="nbsp4"> </tb>
+					</tr>
+				<% } %>
+			</tobody>
+			</table>
+			<% if (page != 0) { %>
+				<a class='page' href="/index.html?page=0">&lt;&lt;</a>
+			<% } %>
+
+			<% for (var i = 0; i < pages; i++) { %>
+				<% if (i == page) { %>
+					<a class='page current-page' href="<%= '/index.html?page=' + i %>"><%= i + 1 %></a>
+				<% } else { %>
+					<a class='page' href="<%= '/index.html?page=' + i %>"><%= i + 1 %></a>
+				<% } %>
+				
+			<% } %>
+
+			<% if (pages != 0 && page != pages - 1) { %>
+				<a class='page' href="<%= '/index.html?page=' + (pages - 1) %>">&gt;&gt;</a>
+			<% } %>
+		</div>
+	</div>
+
+	<script>
+		var Karel = karelbox.contentWindow;
+
+		karelbox.onload = function () {
+
+			Karel.world.corner(5, 5).item('add', 'beeper', 5);
+
+			var karel = new Karel.Robot(Karel.world, 'karel');
+
+			var actions = function (ok) {
+				if (ok) {
+					karel.putBeeper();
+					karel.move(actions);
+				} else { 
+					karel.turnLeft(function() { actions(true); });
+					karel.pickupBeeper();
+				}
+			}
+
+			karel.move(actions);
+		}
+	</script>
+<% include @end %>
