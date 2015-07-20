@@ -1,0 +1,29 @@
+<% include @begin %>
+	<div class="menu">
+		<% include @logo %>
+
+		<span><%= title %></span>
+	</div>
+
+	<div class="main">
+		<div class="center" style="width:300px">
+			<form id='tt' method="get" action="/user/do/register.html" onsubmit="dosubmit(event);">
+				<label>用户名：</label> <input name="name" type="text"> <p>
+				<label>密码：&nbsp;&nbsp;</label> <input name="password" type="password" id='pswd'> <p>
+				<label class="nbsp4"></label> <input type="password" id='pswd2'> <p>
+				<label>邀请码：</label> <input name="invitation" type="text"> <p>
+				<label class="nbsp4"></label> <input type="submit" value="注册">
+			</form>
+		</div>
+	</div>
+	<script>
+		function dosubmit(event) {
+			if (pswd.value != pswd2.value) {
+				alert('两次密码输入不一样');
+				pswd2.select();
+				pswd2.focus();
+				event.preventDefault();
+			}
+		}
+	</script>
+<% include @end %>
