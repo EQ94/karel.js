@@ -1,0 +1,10 @@
+{
+	"db_user": "root",
+	"db_password": "123456",
+	"db": "karel_db", 
+
+	"port" : 3000,
+
+	"pageSize" : 9,
+	"invitation": "szzz"
+}
