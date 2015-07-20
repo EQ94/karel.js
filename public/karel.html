@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Karel Robot</title>
+	<link rel="stylesheet" href="karel.css">
+	<script src='karel.js'> </script>
+</head>
+<body style="margin:0px">
+	<div class="ress">
+		<image src="ress/default.png" data-tiles="{
+			name:'default', 
+			options: { 
+				hcount : 2,
+				names : {
+					beeper:0,
+					robot:1
+				}
+			}
+		}">
+		<script>
+			var defaultRess =  {
+				items : [Item('beeper', Tile('default', 'beeper'))],
+				spirits : [RobotSpirit('robot', Tile('default', 'robot'))],
+			};
+		</script>
+	</div>
+	<div style="overflow:auto; position:fixed; width:100%; height:100%">
+		<canvas id="canvas" oncontextmenu="return false;">
+	</div>
+	<script>
+		var world = new World(canvas, { 
+			avenues : 9, 
+			streets : 9,
+			hasBound : true,
+			beepers : [],
+			robots : [[1, 1, 'karel', 'robot', o.e]]
+		}, {
+			showframes : false,
+			delay : 100,
+			ress : defaultRess,
+		});
+
+		world.run();
+	</script>
+
+	<script>
+		function rebuildWorld(avenues , streets) {
+			world.stop();
+			world = new World(canvas, { 
+				avenues : avenues, 
+				streets : streets,
+				hasBound : true,
+				beepers : [],
+				robots : [[1, 1, 'karel', 'robot', o.e]]
+			}, {
+				showframes : false,
+				delay : 100,
+				ress : defaultRess,
+			});
+			world.run();
+		}
+	</script>
+</body>
+</html>
