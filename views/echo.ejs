@@ -1,0 +1,31 @@
+<% include @begin %>
+	<div class="menu">
+		<% include @logo %>
+		<span><%= title %></span>
+	</div>
+
+	<div class="main">
+		<!-- <% for (var n in locals) { %> <%- n %>, <% } %> -->
+		<div class="center" style="text-align:center">
+			<p> <%= message %>，如果6秒后没有自动跳转，<a href="javascript: dojump();">点击这里跳转</a>。</p>
+		</div>
+	</div>
+
+	<script>
+		function dojump() {
+			<% if (locals.jump) { %>
+				window.history.go(<%= jump %>);
+			<% } else { %>
+				window.history.back();
+			<% } %>
+
+			<% if (locals.refresh) { %>
+				sessionStorage.refresh = true;
+			<% } %>
+
+		}
+		setTimeout(function() {
+			dojump();
+		}, 6000);
+	</script>
+<% include @end %>
