@@ -1,0 +1,115 @@
+<% include @begin %>
+	<div class="enum">
+		<% include @logo %>
+		<% if (session.user.isSuper) { %>
+			<span>卡雷尔任务管理</span>
+		<% } else { %>
+			<span><%= session.user.name %>的卡雷尔任务</span>
+		<% } %>
+		<% include @user %>
+	</div>
+
+	<div class="main" style="overflow-x: none; overflow-y: auto">
+		<h5>卡雷尔任务：</h5>
+		<div class='task-list' style="margin-left: 32px; margin-right: 32px; margin-top: 32px;">
+			<table>
+			<thead>
+				<tr>
+					<th style="width: 16px"> </th> 
+					<th style="text-align: left">卡雷尔任务</th> 
+					<th style="width: 120px">操作</th> 
+					<% if (session.user.isSuper) { %>
+						<th style="width: 120px">作者</th> 
+					<% } %>
+					<th style="width: 120px">日期</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% for (var i = 0; i < questions.length; i++) { %>
+					<tr>
+						<td> Q. </td> 
+						<td><a href="<%= '/design.html?qid=' + questions[i].qid %>"><%= questions[i].caption %> </a></td> 
+						<td style="text-align:center">
+							<a href="<%= '/perform.html?qid=' + questions[i].qid %>" style="font-size:10pt">做任务</a> 
+							<button onclick="deleteQ(<%= questions[i].qid %>)">删除</button>
+						</td> 
+						<% if (session.user.isSuper) { %>
+							<td style="text-align:center"><%= questions[i].name %></td> 
+						<% } %>
+						<td style="text-align:center"><%= questions[i].qcts.toLocaleDateString() %></td>	
+					</tr>
+				<% } %>
+			</tobody>
+			</table>
+			<% if (pageQ != 0) { %>
+				<a class='page' href="/task.html?pageQ=0&pageA=<%= pageA %>">&lt;&lt;</a>
+			<% } %>
+
+			<% for (var i = 0; i < pagesQ; i++) { %>
+				<% if (i == pageQ) { %>
+					<a class='page current-page' href="<%= '/task.html?pageQ=' + i + '&pageA=' + pageA %>"><%= i + 1 %></a>
+				<% } else { %>
+					<a class='page' href="<%= '/task.html?pageQ=' + i + '&pageA=' + pageA %>"><%= i + 1 %></a>
+				<% } %>	
+			<% } %>
+
+			<% if (pagesQ != 0 && pageQ != pagesQ - 1) { %>
+				<a class='page' href="<%= '/task.html?pageQ=' + (pagesQ - 1) + '&pageA=' + pageA %>">&gt;&gt;</a>
+			<% } %>
+			<button style="float: right" onclick="window.location = '/design.html'">设计新任务</button>
+		</div>
+		<h5>卡雷尔任务执行代码：</h5>
+		<div class='task-list' style="margin-left: 32px; margin-right: 32px; margin-top: 32px;">
+			<table>
+			<thead>
+				<tr>
+					<th style="width: 16px"> </th> 
+					<th style="text-align: left">卡雷尔任务</th> 
+					<th style="width: 120px">操作</th> 
+					<% if (session.user.isSuper) { %>
+						<th style="width: 120px">作者</th> 
+					<% } %>
+					<th style="width: 120px">日期</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% for (var i = 0; i < answers.length; i++) { %>
+					<tr>
+						<td> A. </td> 
+						<td><a href="<%= '/perform.html?aid=' + answers[i].aid %>"><%= answers[i].caption %> </a></td> 
+						<td style="text-align:center">
+							<button onclick="deleteA(<%= answers[i].aid %>)">删除</button>
+						</td> 
+						<% if (session.user.isSuper) { %>
+							<td style="text-align:center"><%= answers[i].name %></td> 
+						<% } %>
+						<td style="text-align:center"><%= answers[i].acts.toLocaleDateString() %></td>	
+					</tr>
+				<% } %>
+			</tobody>
+			</table>
+			<% if (pageA != 0) { %>
+				<a class='page' href="/task.html?pageQ=<%= pageQ %>&pageA=0">&lt;&lt;</a>
+			<% } %>
+
+			<% for (var i = 0; i < pagesA; i++) { %>
+				<% if (i == pageA) { %>
+					<a class='page current-page' href="<%= '/task.html?pageQ=' + pageQ + '&pageA=' + i %>"><%= i + 1 %></a>
+				<% } else { %>
+					<a class='page' href="<%= '/task.html?pageQ=' + pageQ + '&pageA=' + i %>"><%= i + 1 %></a>
+				<% } %>
+			<% } %>
+
+			<% if (pagesA != 0 && pageA != pagesA - 1) { %>
+				<a class='page' href="<%= '/task.html?pageQ=' + pageQ + '&pageA=' + (pagesA - 1) %>">&gt;&gt;</a>
+			<% } %>
+		</div>
+		<script>
+			function deleteQ(qid) {
+				if (confirm('确定要删除该任务吗？删除任务后，所有与之相关的任务执行代码都会一起被删除。')) {
+					window.location = '/do/deleteQ.html?qid=' + qid;
+				}
+			}
+		</script>
+	<div>
+<% include @end %>
