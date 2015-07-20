@@ -1,4 +1,4 @@
 # karel.js
-Karel Robot 的 JavaScript版本。  
+karel.js 是 node.js 版本的 Karel Robot。  
 
-Karel Robot 一个编程入门的平台，在游戏中学习编程。
+Karel Robot 是一个编程教学平台，可以是学生在游戏中学习编程方法。
