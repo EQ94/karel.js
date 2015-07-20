@@ -1,0 +1,84 @@
+<div class='user'>
+
+	<% if (session.user) { %>
+
+		<% if (locals.admin) { %>
+
+			<span> <%= session.user.name %> &nbsp;</span>
+			<button onclick="mdp();">更改密码</button>
+
+			<div id="mdpdiv" class="dialog"> 
+				<div class="dialog-content">
+					<p> 修改密码 </p>
+					<p id="mdpinfo">  </p>
+					<label>老密码：</label><input type="password" id="op" style="width:120px"> <p>
+					<label>新密码：</label><input type="password" id="np" style="width:120px"> <p>
+					<label class="nbsp4"></label><input type="password" id="np2" style="width:120px"> <p>
+					<button onclick="mdp2();">确认</button>
+					<button onclick="mdp3();">取消</button>
+				</div>
+				<script>
+					function mdp() {
+						mdpdiv.classList.add('dialog-show');
+					}
+
+					function mdp2() { 
+						mdpinfo.innerHTML = '';
+						if (np.value != np2.value) {
+							return void(mdpinfo.innerHTML = '<i class="warning">新密码两次输入不一样</i>', np2.focus());
+						}
+
+						ajax.get('/user/password?oldPassword=' + op.value + '&newPassword=' + np.value, 
+							function(error, result) {
+								if (error || result != 'ok')
+									mdpinfo.innerHTML = '<i class="warning">' + (error || result) + '</i>';
+								else {
+									alert('密码已经更改')
+									mdp3();
+								}
+							}
+						);
+					}
+
+					function mdp3() {
+						mdpinfo.innerHTML = '';
+						op.value = np.value = np2.value = '';
+						mdpdiv.classList.remove('dialog-show');
+					}
+				</script>
+			</div>
+
+		<% } else { %>
+			<a href="/task.html"><%= session.user.name %></a>
+			<button onclick="this.disabled=true; logout();">退出</button>
+			<script>
+				function logout () {
+					ajax.get('/user/logout', function(error, data) {
+						if (error || data != 'ok')
+							alert(error || data);
+						
+						refresh();
+					});
+				}
+			</script>
+		<% } %>
+	
+
+	<% } else { %>
+		<input type="text" id="user_name" placeholder='名字'>
+		<input type="password" id="user_password" placeholder='密码'>
+		<button onclick="this.disabled=true; login();">登录</button>
+		<a href="/user/register.html">注册</a>
+		<script>
+			function login () {
+				ajax.get('/user/login?name=' + user_name.value + '&password=' + user_password.value, function(error, data) {
+					if (error || data != 'ok')
+						alert(error || data);
+					
+					refresh();
+				});
+			}
+		</script>
+	<% } %>
+
+</div>
