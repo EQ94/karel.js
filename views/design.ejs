@@ -1,0 +1,128 @@
+<% include @begin %>
+	<div class="menu">
+		<% include @logo %>
+		<span class="spliter"></span>
+		<input type="text" id="avenues" value="9" style="text-align:center">
+		<span class="x"></span>
+		<input type="text" id="streets" value="9" style="text-align:center">
+		<button onclick="if (confirm('要重新创建场景吗？')) build();">创建场景</button>
+		<span class="spliter"></span>
+		<span id="create">
+			<button id="k" class="selected">K</button>
+			<button id="b">B</button>
+			<button id="tw"><span class="topwall">+</span></button>
+			<button id="bw"><span class="bottomwall">+</span></button>
+			<button id="lw"><span class="leftwall">+</span></button>
+			<button id="rw"><span class="rightwall">+</span></button>
+		</span>
+		<span class="spliter"></span>
+		<button onclick="exec();">执行场景初始化代码</button>
+
+		<% include @user %>
+	</div>
+	<div class="scence">
+		<iframe id="karelbox" src='/karel.html'></iframe>
+	</div>
+	<div class="task">
+		<form method='post' action='/do/design.html' enctype="multipart/form-data">
+		<% if (locals.question) { %>
+			<h5>编辑卡雷尔任务<sup>(作者：<%= question.name %>)</sup> <input type='submit' value='提交任务' style='float:right; margin-right:20px'></h5>
+			<input type="hidden" name="qid" value=<%= question.qid %>>
+			<label>标题：</label> <input type='text' name='caption' spellcheck="false" value="<%- question.caption %>"> <p>
+			<label>描述：</label> <textarea name='description' spellcheck="false"><%= question.description %></textarea> <p>
+			<label>场景初始化代码：</label> <br>
+			<textarea id="code" name='qcode' spellcheck="false"><%= question.qcode %></textarea> 
+		<% } else { %>
+			<h5>新建卡雷尔任务 <input type='submit' value='提交任务' style='float:right; margin-right:20px'></h5>
+			<label>标题：</label> <input type='text' name='caption' spellcheck="false"> <p>
+			<label>描述：</label> <textarea name='description' spellcheck="false"></textarea> <p>
+			<label>场景初始化代码：</label> <br>
+			<textarea id="code" name='qcode' spellcheck="false"></textarea> 
+		<% } %>
+	</div>
+	<script>
+		var Karel = karelbox.contentWindow;
+
+		function build() {
+			Karel.rebuildWorld(avenues.value, streets.value);
+			code.value = "Karel.rebuildWorld(" + avenues.value + ", " + streets.value + ");\r\n";
+		}
+	
+		karelbox.onload = function() {
+			Karel.canvas.onmousedown = function(event) {
+				var ansn = Karel.world.hitTest(event.x, event.y);
+				if (!ansn)
+					return;
+				var an = ansn[0], sn = ansn[1];
+
+				var s = getSelected();
+
+				if (!s)
+					return;
+
+				var js;
+
+				switch (s) {
+					case 'k':
+						if (event.button == 0)  { // left button
+							js = "Karel.world.spiritMoveTo('karel', " + an + ", " + sn + ");\r\n";
+						} else {
+							js = "(new Karel.Robot(Karel.world, 'karel')).turnLeft();\r\n";
+						}
+					break;
+					case 'b':
+						if (event.button == 0) {
+							js = "Karel.world.corner(" + an + ", " + sn + ").item('add', 'beeper', 1);\r\n"
+						} else {
+							js = "Karel.world.corner(" + an + ", " + sn + ").item('remove', 'beeper', 1);\r\n"
+						}
+					break;
+					default: {
+						var w = "Karel.o.e";
+						switch(s) {
+							case 'lw': w = "Karel.o.w"; break;
+							case 'rw': w = "Karel.o.e"; break;
+							case 'tw': w = "Karel.o.n"; break;
+							case 'bw': w = "Karel.o.s"; break;
+						}
+						if (event.button == 0) {
+							js ="Karel.world.corner(" + an + ", " + sn + ").walls('build', " + w + ");\r\n";
+						} else {
+							js = "Karel.world.corner(" + an + ", " + sn + ").walls('destroy', " + w + ");\r\n";
+						}
+					}
+					break;
+				}
+
+				if (js) {
+					code.value += js;
+					eval(js);
+				}
+			}
+
+			exec();
+		}
+
+		function exec() {
+			var s = code.value;
+			eval(s);
+		}
+
+		create.addEventListener('click', function(event){
+			var bs = create.querySelectorAll('button');
+			for (var i = 0; i < bs.length; i++)
+				bs[i].classList.remove('selected');
+			var target = event.target;
+			if (target.tagName != 'BUTTON') 
+				target = target.parentNode;
+			target.classList.add('selected');
+		});
+
+		function getSelected() {
+			var bs = create.querySelectorAll('button');
+			for (var i = 0; i < bs.length; i++)
+				if (bs[i].classList.contains('selected'))
+					return bs[i].id;
+		}
+	</script>
+<% include @end %>
