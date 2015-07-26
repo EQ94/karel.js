@@ -11,7 +11,7 @@ db.query(db.sql(function(){/*
 		caption varchar(255) not null,
 		description text not null,
 		qcode text not null,
-		qcts timestamp default current_timestamp,
+		qcts datetime not null,
 		quts timestamp default current_timestamp on update current_timestamp,
 		primary key (qid)
 	)
@@ -28,7 +28,7 @@ db.query(db.sql(function(){/*
 		uid bigint not null,
 		qid bigint not null,
 		acode text not null,
-		acts timestamp default current_timestamp,
+		acts datetime not null,
 		auts timestamp default current_timestamp on update current_timestamp,
 		primary key (aid)
 	)
@@ -54,7 +54,7 @@ exports.addQ = function (uid, caption, description, qcode, callback) {
 	if (!description)
 		return callback('没有任务描述');
 
-	var sql = db.format("insert into questions (uid, caption, description, qcode) values ({1},  '{2}',  '{3}', '{4}')", 
+	var sql = db.format("insert into questions (uid, caption, description, qcode, qcts) values ({1},  '{2}',  '{3}', '{4}', now())", 
 			uid, db.dq(caption), db.dq(description), db.dq(qcode));
 
 	db.query(sql, function (error, result, fields) {
@@ -89,7 +89,7 @@ exports.findA = function(aid, callback) {
 }
 
 exports.addA = function(uid, qid, acode, callback) {
-	var sql = db.format("insert into answers (uid, qid, acode) values ({1}, {2}, '{3}')", uid, qid, db.dq(acode));
+	var sql = db.format("insert into answers (uid, qid, acode, acts) values ({1}, {2}, '{3}', now())", uid, qid, db.dq(acode));
 	db.query(sql, function(error, result, fields) {
 		if (error)
 			throw new Error(error);
