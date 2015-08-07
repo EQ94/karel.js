@@ -199,6 +199,9 @@ router.post('/do/perform.html', function (req, res, next) {
 
 router.get(['/', '/index.html'], function(req, res, next) {
 	var page = req.query.page || 0;
+	page = Number(page);
+	if (isNaN(page))
+		page = 0;
 
 	task.countQAll(function (c) {
 		var pages = Math.trunc(c / config.pageSize) + ((c %  config.pageSize) ? 1 : 0);
@@ -224,6 +227,14 @@ router.get('/task.html', function(req, res, next) {
 
 	var pageQ = req.query.pageQ || 0;
 	var pageA = req.query.pageA || 0;
+
+	pageQ = Number(pageQ);
+	if (isNaN(pageQ))
+		pageQ = 0;
+
+	pageA = Number(pageA);
+	if (isNaN(pageA))
+		pageA = 0;
 
 	var act;
 	if (req.session.user.isSuper) { // root user

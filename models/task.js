@@ -39,7 +39,17 @@ db.query(db.sql(function(){/*
 	exports.validA = true;
 });
 
+function checkId(id) {
+	id = Number(id);
+	if (isNaN(id))
+		return false;
+	return true;
+}
+
 exports.findQ = function(qid, callback) {
+	if (!checkId(qid))
+		qid = 1;
+
 	var sql = "select * from questions, users where qid = " + qid + " and questions.uid = users.uid";
 	db.query(sql, function(error, result, fields) {
 		if (error)
@@ -49,6 +59,9 @@ exports.findQ = function(qid, callback) {
 }
 
 exports.addQ = function (uid, caption, description, qcode, callback) {
+	if (!checkId(uid))
+		qid = 1;
+
 	if (!caption) 
 		return callback('任务标题不能为空');
 	if (!description)
@@ -65,6 +78,9 @@ exports.addQ = function (uid, caption, description, qcode, callback) {
 }
 
 exports.editQ = function (qid, caption, description, qcode, callback) {
+	if (!checkId(qid))
+		qid = 1;
+
 	if (!caption) 
 		return callback('任务标题不能为空');
 	if (!description)
@@ -81,6 +97,9 @@ exports.editQ = function (qid, caption, description, qcode, callback) {
 }
 
 exports.findA = function(aid, callback) {
+	if (!checkId(aid))
+		aid = 1;
+
 	db.query("select * from answers, users where aid = " + aid + " and answers.uid = users.uid", function(error, result, fields) {
 		if (error)
 			throw new Error(error);
@@ -89,6 +108,12 @@ exports.findA = function(aid, callback) {
 }
 
 exports.addA = function(uid, qid, acode, callback) {
+	if (!checkId(uid))
+		uid = 1;
+
+	if (!checkId(qid))
+		qid = 1;
+
 	var sql = db.format("insert into answers (uid, qid, acode, acts) values ({1}, {2}, '{3}', now())", uid, qid, db.dq(acode));
 	db.query(sql, function(error, result, fields) {
 		if (error)
@@ -98,6 +123,9 @@ exports.addA = function(uid, qid, acode, callback) {
 }
 
 exports.editA = function(aid, acode, callback) {
+	if (!checkId(aid))
+		aid = 1;
+
 	var sql = db.format("update answers set acode='{2}' where aid={1}", aid, db.dq(acode));
 	db.query(sql, function(error, result, fields) {
 		if (error)
@@ -142,6 +170,9 @@ exports.pageAAll = function (page, callback) {
 }
 
 exports.countQ = function (uid, callback) {
+	if (!checkId(uid))
+		uid = 1;
+
 	db.query("select count(qid) from questions where uid = " + uid, function(error, result, fields) {
 		if (error)
 			throw new Error(error);
@@ -150,6 +181,9 @@ exports.countQ = function (uid, callback) {
 }
 
 exports.pageQ = function (uid, page, callback) {
+	if (!checkId(uid))
+		uid = 1;
+
 	var sql = "select * from questions, users where questions.uid = " + uid + " and questions.uid = users.uid order by qcts desc limit " + (page * config.pageSize) + "," + config.pageSize;
 	db.query(sql, function(error, result, fields) {
 		if (error)
@@ -159,6 +193,9 @@ exports.pageQ = function (uid, page, callback) {
 }
 
 exports.countA = function (uid, callback) {
+	if (!checkId(uid))
+		uid = 1;
+
 	db.query("select count(aid) from answers where uid = " + uid, function(error, result, fields) {
 		if (error)
 			throw new Error(error);
@@ -167,6 +204,9 @@ exports.countA = function (uid, callback) {
 }
 
 exports.pageA = function (uid, page, callback) {
+	if (!checkId(uid))
+		uid = 1;
+
 	var sql = "select * from answers, questions, users where answers.uid = " + uid + 
 		" and answers.uid = users.uid and answers.qid = questions.qid order by acts desc limit " + (page * config.pageSize) + "," + config.pageSize;	
 	db.query(sql, function (error, result, fields) {
@@ -177,6 +217,9 @@ exports.pageA = function (uid, page, callback) {
 }
 
 exports.deleteQ = function (qid, callback) {
+	if (!checkId(qid))
+		qid = 1;
+
 	db.query("delete from questions where qid=" + qid, function (error, result, fields) {
 		if (error)
 			throw new Error(error);
@@ -189,6 +232,9 @@ exports.deleteQ = function (qid, callback) {
 }
 
 exports.deleteA = function (aid, callback) {
+	if (!checkId(aid))
+		aid = 1;
+
 	var sql = "delete from answers where aid=" + aid;
 
 	db.query(sql, function(error, result, fields) {

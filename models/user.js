@@ -26,7 +26,7 @@ db.query(db.sql(function() {/*
 });
 
 exports.find = function(name, callback) {
-	db.query("select * from users where name='" + name + "'", function(error, result, fields) {
+	db.query("select * from users where name='" + db.dq(name) + "'", function(error, result, fields) {
 		if (error)
 			throw new Error(error);
 
@@ -79,7 +79,7 @@ exports.modifyPassword = function (uid, password, callback) {
 	if (password.length < 6 || password.length > 16)
 		return callback('密码长度必须大于等于6小于等于16');
 
-	db.query("update users set password='" + password + "' where uid=" + uid, function(error, result, fields) {
+	db.query("update users set password='" + db.dq(password) + "' where uid=" + uid, function(error, result, fields) {
 		if (error)
 			throw new Error(error);
 		return callback();
