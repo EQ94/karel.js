@@ -548,7 +548,7 @@ World.defaultOptions.edgeRender = EdgeRender();
 
 function Tiles(image, options) {
 	if (this === window)
-		return new Tiles();
+		return new Tiles(image, options);
 
 	this.image = image;
 

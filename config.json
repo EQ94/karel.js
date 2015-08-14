@@ -5,8 +5,11 @@
 	"db_password": "123456",
 	"db": "karel_db", 
 
-	"port" : 3000,
+	"port" : 80,
 
 	"pageSize" : 9,
-	"invitation": "welcome"
+	"invitation": "welcome",
+
+	"icp" : "陕ICP备15010234号",
+	"copyright" : "Copyright:MIT"
 }
